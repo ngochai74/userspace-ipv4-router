@@ -7,7 +7,7 @@ def load_routing_table(config_file_path: str) -> RoutingTrie:
     with open(config_file_path, 'r') as f:
         for line in f:
             line = line.strip()
-            # Bỏ qua dòng trống hoặc dòng comment (#)
+           
             if not line or line.startswith('#'):
                 continue
                 
