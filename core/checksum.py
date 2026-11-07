@@ -4,6 +4,7 @@ import struct
 
 def calculate_checksum(data: bytes) -> int:
     data = bytes(data)
+
     if len(data) % 2:
         data += b'\x00'
 
@@ -24,12 +25,15 @@ def verify_checksum(raw: bytes) -> bool:
     if len(raw) < 20:
         return False
 
-    version, ihl = raw[0] >> 4, (raw[0] & 0x0F) * 4
-    total = struct.unpack("!H", raw[2:4])[0]
+    version = raw[0] >> 4
+    ihl = (raw[0] & 0x0F) * 4
 
-    return (
-        version == 4
-        and 20 <= ihl <= 60
-        and ihl <= total <= len(raw)
-        and calculate_checksum(raw[:ihl]) == 0
-    )
+    if version != 4 or ihl < 20 or ihl > 60 or len(raw) < ihl:
+        return False
+
+    total_length = struct.unpack("!H", raw[2:4])[0]
+
+    if total_length < ihl:
+        return False
+
+    return calculate_checksum(raw[:ihl]) == 0
