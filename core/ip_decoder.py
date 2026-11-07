@@ -1,4 +1,4 @@
-
+from __future__ import annotations
 import struct
 import socket
 from dataclasses import dataclass, replace
