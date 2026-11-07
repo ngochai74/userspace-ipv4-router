@@ -13,7 +13,7 @@ def test_ip_core():
 
     # 1. Tạo một gói tin IPv4 Header mẫu (20 bytes) - Gói ICMP Echo Request
     # Nguồn: 192.168.1.10, Đích: 8.8.8.8, TTL: 64, Protocol: 1 (ICMP)
-    raw_header = b'\x45\x00\x00\x54\x12\x34\x40\x00\x40\x01\x00\x00\xc0\xa8\x01\x0a\x08\x08\x08\x08'
+    raw_header = b'\x45\x00\x00\x1e\x12\x34\x40\x00\x40\x01\x00\x00\xc0\xa8\x01\x0a\x08\x08\x08\x08'
     
     # Tính toán checksum chuẩn cho header này
     csum = calculate_checksum(raw_header)
