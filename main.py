@@ -45,7 +45,7 @@ def is_icmp_error_packet(pkt) -> bool:
     return False
 
 def main():
-    print("🚀 Bắt đầu khởi động User-Space IPv4 Router (Tuần 3 - Dynamic ARP & Traceroute)...")
+    print(" Bắt đầu khởi động User-Space IPv4 Router (Tuần 3 - Dynamic ARP & Traceroute)...")
 
     route_file = "config/routes.txt"
     arp_file = "config/arp_table.txt"
@@ -110,7 +110,7 @@ def main():
                         eth_hdr = struct.pack("!6s6sH", mac_to_bytes(arp_data["sender_mac"]), get_interface_mac(out_port), 0x0800)
                         sock.sendto(eth_hdr + raw_ip, (out_port, 0))
                         stats["fwd"] += 1
-                        print(f"✅ Đã xả hàng đợi: FWD gói tin tới {arp_data['sender_ip']}")
+                        print(f" Đã xả hàng đợi: FWD gói tin tới {arp_data['sender_ip']}")
                 continue
 
             # ==========================================
@@ -173,7 +173,7 @@ def main():
             new_pkt, drop_flag = decrease_ttl(pkt)
             if drop_flag:
                 stats["drop"] += 1
-                print(f"❌ Drop: {pkt.source_ip} -> {pkt.dest_ip} (Hết TTL)")
+                print(f" Drop: {pkt.source_ip} -> {pkt.dest_ip} (Hết TTL)")
                 if not is_icmp_error_packet(pkt):
                     router_src = get_interface_ip(in_iface) or next(iter(router_ips), None)
                     if router_src:
@@ -197,17 +197,17 @@ def main():
                 eth_header = struct.pack("!6s6sH", dest_mac, src_mac, 0x0800)
                 sock.sendto(eth_header + final_ip_raw, (out_port, 0))
                 stats["fwd"] += 1
-                print(f"✅ FWD: {pkt.source_ip} -> {pkt.dest_ip} | Port: {out_port}")
+                print(f" FWD: {pkt.source_ip} -> {pkt.dest_ip} | Port: {out_port}")
             else:
                 # Chưa có MAC -> Đưa vào hàng đợi & Phát Broadcast ARP Request
                 arp_manager.enqueue_packet(target_ip, final_ip_raw, out_port)
                 req_frame = ARPManager.build_arp_request(get_interface_mac(out_port), get_interface_ip(out_port), target_ip)
                 sock.sendto(req_frame, (out_port, 0))
                 stats["arp_req"] += 1
-                print(f"⏳ Tạm giữ IP: {pkt.source_ip}->{pkt.dest_ip}. Đang gửi ARP Request tìm {target_ip}...")
+                print(f" Tạm giữ IP: {pkt.source_ip}->{pkt.dest_ip}. Đang gửi ARP Request tìm {target_ip}...")
 
         except KeyboardInterrupt:
-            print(f"\n🛑 Tắt Router. Thống kê: Nhận {stats['rx']} | Đã chuyển {stats['fwd']} | Đã drop {stats['drop']} | ARP Req {stats['arp_req']} | ARP Rep {stats['arp_rep']}")
+            print(f"\n Tắt Router. Thống kê: Nhận {stats['rx']} | Đã chuyển {stats['fwd']} | Đã drop {stats['drop']} | ARP Req {stats['arp_req']} | ARP Rep {stats['arp_rep']}")
             break
         except Exception as e:
             print("Lỗi hệ thống:", e)
