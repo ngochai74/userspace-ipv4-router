@@ -55,8 +55,7 @@ class ICMPHandler:
 
         # Lấy độ dài thực tế của IP Header gốc (tính cả Options nếu có)
         ihl_bytes = (original_raw_ip[0] & 0x0F) * 4
-        quoted_data = original_raw_ip[:ihl_bytes + 8]
-
+        quoted_data = original_raw_ip
         # 4 bytes Unused = 0
         temp_pkt = struct.pack("!BBHI", icmp_type, icmp_code, 0, 0) + quoted_data
         csum = calculate_checksum(temp_pkt)
