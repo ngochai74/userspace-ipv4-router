@@ -26,8 +26,10 @@ ip link add veth-h2 type veth peer name veth-rt2
 echo "Đang gắn cổng mạng vào namespace"
 ip link set veth-h1 netns host1
 ip link set veth-h2 netns host2
+ip addr add 192.168.1.1/24 dev veth-rt1
+ip addr add 192.168.2.1/24 dev veth-rt2
+sysctl -w net.ipv4.ip_forward=0
 
-# (veth-rt1 và veth-rt2 sẽ nằm ở không gian mặc định - nơi router chạy)
 
 # 5. Cấu hình IP và bật các cổng (UP)
 echo "Đang cấu hình IP cho host1 (192.168.1.10/24)"
