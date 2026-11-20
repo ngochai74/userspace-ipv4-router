@@ -27,12 +27,13 @@ def resolve_mac(ip, interface):
     key = (ip, interface)
 
     if key not in arp_cache:
-        response = srp1(
-            Ether(dst="ff:ff:ff:ff:ff:ff") / ARP(pdst=ip),
-            iface=interface,
-            timeout=2,
-            verbose=False
+       
+        request = (
+            Ether(src=router_macs[interface], dst="ff:ff:ff:ff:ff:ff") / 
+            ARP(op=1, hwsrc=router_macs[interface], psrc=router_ips[interface], pdst=ip)
         )
+        
+        response = srp1(request, iface=interface, timeout=2, verbose=False)
 
         if response is None or ARP not in response:
             raise RuntimeError(f"Khong tim thay MAC: {ip}")
@@ -82,10 +83,28 @@ def send_icmp_error(frame, packet, raw_ip, icmp_type, icmp_code):
 
 
 def handle_packet(frame):
-    if Ether not in frame or IP not in frame:
+    if Ether not in frame:
         return
 
     if frame[Ether].src.lower() in router_macs.values():
+        return
+
+    interface = getattr(frame, "sniffed_on", None)
+
+    if ARP in frame and frame[ARP].op == 1:  # op == 1 là ARP Request (who-has)
+        target_ip = frame[ARP].pdst
+        
+        if interface and interface in router_ips and target_ip == router_ips[interface]:
+            arp_reply = (
+                Ether(src=router_macs[interface], dst=frame[Ether].src) /
+                ARP(op=2, hwsrc=router_macs[interface], psrc=target_ip,
+                    hwdst=frame[ARP].hwsrc, pdst=frame[ARP].psrc)
+            )
+            sendp(arp_reply, iface=interface, verbose=False)
+            print(f"[ARP] Da tra loi MAC cho {frame[ARP].psrc} tren {interface}")
+        return
+
+    if IP not in frame:
         return
 
     try:
@@ -147,7 +166,6 @@ def handle_packet(frame):
     except Exception as error:
         print("Loi:", error)
 
-
 if __name__ == "__main__":
     router_macs = {
         iface: get_if_hwaddr(iface).lower()
@@ -166,5 +184,5 @@ if __name__ == "__main__":
         iface=INTERFACES,
         prn=handle_packet,
         store=False,
-        lfilter=lambda p: Ether in p and IP in p
+        lfilter=lambda p: Ether in p and (IP in p or ARP in p)
     )
