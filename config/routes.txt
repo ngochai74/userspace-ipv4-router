@@ -1,2 +1,3 @@
-# Cấu trúc: [IP_Address] [MAC_Address]
-# Để trống để Router tự học MAC động (Dynamic ARP)
+# Cấu trúc: [Network/CIDR] [Next_Hop] [Interface]
+192.168.1.0/24 0.0.0.0 veth-rt1
+192.168.2.0/24 0.0.0.0 veth-rt2
