@@ -45,7 +45,7 @@ def is_icmp_error_packet(pkt) -> bool:
     return False
 
 def main():
-    print(" Bắt đầu khởi động User-Space IPv4 Router (Tuần 3 - Dynamic ARP & Traceroute)...")
+    print(" Bắt đầu khởi động User-Space IPv4 Router")
 
     route_file = "config/routes.txt"
     arp_file = "config/arp_table.txt"
