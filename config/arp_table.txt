@@ -1,2 +1,2 @@
-# Bảng ARP tĩnh: [IP] [MAC]
-
+# Cấu trúc: [IP_Address] [MAC_Address]
+# Để trống để Router tự học MAC động (Dynamic ARP)
