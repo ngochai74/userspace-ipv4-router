@@ -1,5 +1,2 @@
-# Cấu trúc: [Prefix] [Next_Hop] [Interface]
-192.168.1.0/24 0.0.0.0 veth-rt1
-192.168.2.0/24 0.0.0.0 veth-rt2
-10.0.0.0/8 192.168.1.254 veth-rt1
-0.0.0.0/0 192.168.2.254 veth-rt2
+# Cấu trúc: [IP_Address] [MAC_Address]
+# Để trống để Router tự học MAC động (Dynamic ARP)
