@@ -18,17 +18,17 @@ class ARPManager:
     ARP_OP_REPLY = 2
     CACHE_TTL = 300  # Thời gian sống của bản ghi ARP động (300 giây)
 
-    def __init__(self, static_arp_table: dict[str, str] | None = None):
-        # Lưu dạng: ip -> (mac_str, expire_timestamp | None). None = bản ghi tĩnh vĩnh viễn
-        self.cache: dict[str, tuple[str, float | None]] = {}
-        # Hàng đợi gói IP đang chờ phân giải MAC: target_ip -> list[(raw_ip_bytes, out_port, timestamp)]
-        self.pending_queues: dict[str, list[tuple[bytes, str, float]]] = defaultdict(list)
+    def __init__(self, static_arp_table=None):
+       
+        self.cache = {}
+        
+        self.pending_queues = defaultdict(list)
 
         if static_arp_table:
             for ip, mac in static_arp_table.items():
                 self.cache[ip] = (mac.lower(), None)
 
-    def lookup(self, ip: str) -> str | None:
+    def lookup(self, ip: str):
         """Tra cứu MAC từ ARP Cache, tự động xóa nếu bản ghi động đã hết hạn"""
         entry = self.cache.get(ip)
         if not entry:
@@ -50,11 +50,11 @@ class ARPManager:
         if len(queue) < 10:
             queue.append((raw_ip, out_port, time.time()))
 
-    def pop_pending_packets(self, target_ip: str) -> list[tuple[bytes, str]]:
+    def pop_pending_packets(self, target_ip: str):
         """Lấy toàn bộ gói tin đang chờ của target_ip ra để gửi đi ngay khi có MAC"""
         items = self.pending_queues.pop(target_ip, [])
         now = time.time()
-        # Chỉ giữ lại các gói chưa quá hạn chờ 5 giây
+        
         return [(raw_ip, out_port) for raw_ip, out_port, ts in items if now - ts <= 5.0]
 
     @classmethod
@@ -94,7 +94,7 @@ class ARPManager:
         return eth_header + arp_payload
 
     @classmethod
-    def parse_arp_packet(cls, raw_arp: bytes) -> dict | None:
+    def parse_arp_packet(cls, raw_arp: bytes):
         """Phân tích 28 bytes ARP payload nhận được từ Raw Socket"""
         if len(raw_arp) < 28:
             return None
