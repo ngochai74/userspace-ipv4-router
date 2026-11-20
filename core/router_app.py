@@ -10,11 +10,13 @@ from routing.trie import RoutingTrie
 from icmp.icmp_handler import ICMPHandler
 
 
-INTERFACES = ["r1-eth0", "r1-eth1"]
+INTERFACES = ["veth-rt1", "veth-rt2"]
 
 routing = RoutingTrie()
-routing.insert("10.0.1.0/24", "DIRECT", "r1-eth0")
-routing.insert("10.0.2.0/24", "DIRECT", "r1-eth1")
+routing.insert("192.168.1.0/24", "DIRECT", "veth-rt1")
+routing.insert("192.168.2.0/24", "DIRECT", "veth-rt2")
+routing.insert("10.0.0.0/8", "192.168.1.254", "veth-rt1")
+routing.insert("0.0.0.0/0", "192.168.2.254", "veth-rt2")
 
 arp_cache = {}
 router_macs = {}
