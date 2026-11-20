@@ -21,7 +21,7 @@ def get_interface_mac(iface: str) -> bytes:
         mac_str = f.read().strip()
     return mac_to_bytes(mac_str)
 
-def get_interface_ip(iface: str) -> str | None:
+def get_interface_ip(iface: str):
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     try:
         info = fcntl.ioctl(s.fileno(), 0x8915, struct.pack("256s", iface[:15].encode("utf-8")))
@@ -31,7 +31,7 @@ def get_interface_ip(iface: str) -> str | None:
     finally:
         s.close()
 
-def get_all_router_ips() -> set[str]:
+def get_all_router_ips():
     ips = set()
     for iface in os.listdir("/sys/class/net"):
         if iface == "lo": continue
